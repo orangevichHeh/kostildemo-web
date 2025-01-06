@@ -10,7 +10,7 @@ This fork adds pagination, search and more.
  - [ ] Sorting
 
 ## Requirements
- - PHP 7.1 and larger.
+ - PHP 7.4 and larger.
  - PHP exts: JSON, PDO, PDO-MySQL.
  
 ## Installation

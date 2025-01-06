@@ -5,7 +5,7 @@
     "license": "GPL-3.0-only",
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.1 || ^8.0",
+        "php": "^7.4 || ~8.0.0 || ~8.1.0 || ~8.2.0",
         "iignatov/lightopenid": "^1.3",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
@@ -28,8 +28,8 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "^4.21",
-        "symfony/var-dumper": "^5.3",
-        "nikic/php-parser": "^4.13"
+        "vimeo/psalm": "^5.7.7",
+        "symfony/var-dumper": "^5.4.48",
+        "nikic/php-parser": "^4.14"
     }
 }
