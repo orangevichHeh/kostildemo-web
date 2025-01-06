@@ -7,6 +7,10 @@ use App\Collection\SimpleCollection;
 use ArrayAccess;
 use LogicException;
 
+/**
+ * @template T mixed
+ * @template-extends SimpleCollection<T>
+ */
 class CookieManager extends SimpleCollection
 {
     /**

@@ -61,13 +61,22 @@ class DataRegistry implements ArrayAccess
 
     public function offsetSet($offset, $value): void
     {
-        $this->registry[$offset] = $value;
+        if ($offset === null) {
+            $this->registry[] = $value;
 
-        $stmt = $this->registryInsertStatement;
-        $stmt->bindValue(':key', $offset);
+            $stmt = $this->registryInsertStatement;
+            $stmt->bindValue(':key', count($this->registry) - 1); // Use the index as the key
+
+        } else {
+            $this->registry[$offset] = $value;
+
+            $stmt = $this->registryInsertStatement;
+            $stmt->bindValue(':key', $offset);
+
+        }
         $stmt->bindValue(':value', @json_encode($value));
-
         $stmt->execute();
+
     }
 
     public function offsetUnset($offset): void

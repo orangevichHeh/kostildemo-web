@@ -124,6 +124,10 @@ class AbstractController
      */
     protected function isHttpMethod(string $method): bool
     {
+        if (!isset($_SERVER['REQUEST_METHOD'])) {
+            return false;
+        }
+
         return strtolower($method) === strtolower($_SERVER['REQUEST_METHOD']);
     }
 

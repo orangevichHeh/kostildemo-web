@@ -409,7 +409,8 @@ class App
 
     public function getFromRequest(string $key): ?string
     {
-        return $_REQUEST[$key] ?? null;
+        $value = $_REQUEST[$key] ?? null;
+        return is_string($value) ? $value : null;
     }
 
     public function isCleanupRequest(): bool
@@ -443,11 +444,17 @@ class App
         $url = $this->config()['system']['url'] ?? '';
         if (empty($url))
         {
-            $urlParts = $_SERVER['HTTP_REFERER'] ? parse_url($_SERVER['HTTP_REFERER']) : [
-                'scheme' => !empty($_SERVER['HTTPS']) ? 'https' : 'http',
-                'host' => $_SERVER['HTTP_HOST'],
-                'path' => $_SERVER['SCRIPT_NAME']
-            ];
+            $urlParts = $_SERVER['HTTP_REFERER'] ?? null;
+
+            if ($urlParts) {
+                $urlParts = parse_url($_SERVER['HTTP_REFERER']);
+            } else {
+                $urlParts = [
+                    'scheme' => !empty($_SERVER['HTTPS']) ? 'https' : 'http',
+                    'host' => $_SERVER['HTTP_HOST'] ?? '',
+                    'path' => $_SERVER['SCRIPT_NAME'] ?? ''
+                ];
+            }
 
             $url = $this->buildUrl([
                 'scheme' => $urlParts['scheme'] ?? '',
