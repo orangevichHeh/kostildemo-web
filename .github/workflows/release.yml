@@ -1,0 +1,88 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+      
+jobs:
+  validate:
+    name: Validate composer.json and run Psalm
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Psalm
+        uses: docker://ghcr.io/psalm/psalm-github-actions:4.21.0
+        with:
+          composer_ignore_platform_reqs: true
+
+
+  build-release:
+    name: Build release archive
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-dev
+    
+    - name: Create release archive
+      run: |
+        rm -rf composer.json composer.lock psalm.xml
+        cp src/.htaccess vendor/.htaccess
+        echo "RELEASE_FILENAME=release-${GITHUB_REF/refs\/tags\//}-${GITHUB_SHA::7}.tar.gz" >> $GITHUB_ENV
+        tar -czf release.tar.gz *
+
+    - name: Create checksum
+      run: |
+        sha256sum release.tar.gz > checksum.txt
+    
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: true
+        prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+    
+    - name: Upload binary
+      id: upload-release-archive
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: release.tar.gz
+        asset_name: ${{ env.RELEASE_FILENAME }}
+        asset_content_type: application/gzip
+    
+    - name: Upload checksum
+      id: upload-release-checksum
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./checksum.txt
+        asset_name: checksum.txt
+        asset_content_type: text/plain
