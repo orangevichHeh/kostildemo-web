@@ -444,9 +444,7 @@ class App
         $url = $this->config()['system']['url'] ?? '';
         if (empty($url))
         {
-            $urlParts = $_SERVER['HTTP_REFERER'] ?? null;
-
-            if ($urlParts) {
+            if (isset($_SERVER['HTTP_REFERER'])) {
                 $urlParts = parse_url($_SERVER['HTTP_REFERER']);
             } else {
                 $urlParts = [
