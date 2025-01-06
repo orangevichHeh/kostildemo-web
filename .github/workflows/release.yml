@@ -18,7 +18,7 @@ jobs:
         run: composer validate --strict
 
       - name: Psalm
-        uses: docker://ghcr.io/psalm/psalm-github-actions:4.21.0
+        uses: docker://ghcr.io/psalm/psalm-github-actions:5.7.7
         with:
           composer_ignore_platform_reqs: true
 
