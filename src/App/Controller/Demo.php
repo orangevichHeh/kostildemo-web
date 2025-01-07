@@ -51,7 +51,13 @@ class Demo extends AbstractController
         // Get total count
         $countStmt = $db->prepare("SELECT COUNT(DISTINCT r.record_id) as total " . $baseQuery . " " . $whereClause);
         $countStmt->execute($params);
-        $totalRecords = (int)$countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $result = $countStmt->fetch(PDO::FETCH_ASSOC);
+		if ($result === false) {
+			$totalRecords = 0;
+		} else {
+			$totalRecords = (int)$result['total'];
+		}
+
         $totalPages = ceil($totalRecords / self::ITEMS_PER_PAGE);
 
         // Get paginated results
