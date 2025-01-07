@@ -45,7 +45,7 @@ jobs:
     
     - name: Create release archive
       run: |
-        rm -rf composer.json composer.lock psalm.xml
+        rm -rf composer.json composer.lock psalm.xml README.md
         cp src/.htaccess vendor/.htaccess
         echo "RELEASE_FILENAME=release-${GITHUB_REF/refs\/tags\//}-${GITHUB_SHA::7}.tar.gz" >> $GITHUB_ENV
         tar -czf release.tar.gz *

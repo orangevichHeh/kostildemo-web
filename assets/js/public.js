@@ -64,5 +64,34 @@
                 deleteButton.addEventListener('click', onDeleteHandler);
             }
         })();
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            // Set initial value from URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            searchInput.value = urlParams.get('search') || '';
+
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const searchValue = this.value.trim();
+                    const currentUrl = new URL(window.location.href);
+                    
+                    if (searchValue) {
+                        // Remove any existing 'find' parameter if we're searching
+                        currentUrl.searchParams.delete('find');
+                        currentUrl.searchParams.set('search', searchValue);
+                    } else {
+                        currentUrl.searchParams.delete('search');
+                    }
+                    
+                    // Reset to page 1 when searching
+                    currentUrl.searchParams.delete('page');
+                    
+                    window.location.href = currentUrl.toString();
+                }, 500);
+            });
+        }
     });
 })(window, document);

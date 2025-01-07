@@ -15,7 +15,7 @@ class Html
         // TODO: perform conversions like "dataDemoId" --> "data-demo-id"
         foreach ($attributes as $name => $val)
         {
-            $retVal[] = sprintf('%s="%s"', $name, htmlspecialchars($val));
+            $retVal[] = sprintf('%s="%s"', $name, htmlspecialchars(strval($val)));
         }
 
         return implode(' ', $retVal);

@@ -1,13 +1,13 @@
 # kostildemo
 Web-service, which allows you to store and view info about demo records from your server. \
 This repository is a fork of [Bubuni-Team/kostildemo](https://github.com/Bubuni-Team/kostildemo) \
-This fork adds pagination, search and more.
+This fork adds pagination and search.
 
 ## Features
- - [ ] Pagination
- - [ ] Search
- - [ ] Filter
- - [ ] Sorting
+ - [x] Pagination
+ - [x] Search
+ - [ ] Filter (?)
+ - [ ] Sorting (?)
 
 ## Requirements
  - PHP 7.4 and larger.
@@ -15,10 +15,9 @@ This fork adds pagination, search and more.
  
 ## Installation
 1. Install/check all dependencies on webserver.
-1. Unzip the archive with the web part.
+1. Download latest release and unzip the archive with the web part.
 1. Create a database in MySQL, load the `database.sql` dump into it.
-1. Open the configuration file, fill it out carefully.
-1. Download the contents of the web panel folder (except for the database dump and the LICENSE file).
+1. Remove `.sample` from configuration file `config.php.sample` and fill it out carefully.
 
 ## Credits
 [SourceMod plugin](https://github.com/Bubuni-Team/sm-kostildemo)

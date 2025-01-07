@@ -16,46 +16,84 @@ use PDO;
 
 class Demo extends AbstractController
 {
+    private const ITEMS_PER_PAGE = 10;
+
     public function actionIndex(): string
     {
         $db = $this->db();
-        $rawDemoList = $db->query("SELECT * FROM `record` ORDER BY `uploaded_at` DESC", PDO::FETCH_ASSOC);
+        $page = max(1, (int)($this->getFromRequest('page') ?? 1));
+        $search = $this->getFromRequest('search');
+        $playerId = $this->getFromRequest('find');
 
+        // Build base query
+        $baseQuery = "FROM `record` r 
+                     LEFT JOIN `record_player` rp ON r.record_id = rp.record_id";
+        
+        $whereConditions = [];
+        $params = [];
+
+        // Add search condition
+        if ($search) {
+            $whereConditions[] = "(r.map LIKE :search OR rp.username LIKE :search OR rp.account_id = :account_id)";
+            $params[':search'] = "%$search%";
+            // Try to convert search input to account_id if it's numeric
+            $params[':account_id'] = is_numeric($search) ? (int)$search : -1;
+        }
+
+        // Add player filter
+        if ($playerId) {
+            $whereConditions[] = "rp.account_id = :playerId";
+            $params[':playerId'] = $playerId;
+        }
+
+        $whereClause = !empty($whereConditions) ? "WHERE " . implode(' AND ', $whereConditions) : "";
+
+        // Get total count
+        $countStmt = $db->prepare("SELECT COUNT(DISTINCT r.record_id) as total " . $baseQuery . " " . $whereClause);
+        $countStmt->execute($params);
+        $totalRecords = (int)$countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+        $totalPages = ceil($totalRecords / self::ITEMS_PER_PAGE);
+
+        // Get paginated results
+        $offset = ($page - 1) * self::ITEMS_PER_PAGE;
+        $query = "SELECT DISTINCT r.* " . $baseQuery . " " . $whereClause . " 
+                 ORDER BY r.uploaded_at DESC LIMIT :limit OFFSET :offset";
+        
+        $stmt = $db->prepare($query);
+        $stmt->bindValue(':limit', self::ITEMS_PER_PAGE, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+        $stmt->execute();
+        
         $demoList = [];
-        foreach ($rawDemoList as $demo)
-        {
-            $recordId = (int) $demo['record_id'];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $demo) {
+            $recordId = (int)$demo['record_id'];
             $demoList[$recordId] = $demo;
             $demoList[$recordId]['players'] = [];
         }
 
-        if (!empty($demoList))
-        {
+        // Get players for demos
+        if (!empty($demoList)) {
             $playerStmt = $db->prepare(
-                sprintf("SELECT * FROM `record_player` WHERE `record_id` IN (%s)", implode(',', array_keys($demoList)))
+                "SELECT * FROM `record_player` WHERE `record_id` IN (" . 
+                implode(',', array_keys($demoList)) . ")"
             );
             $playerStmt->execute();
 
-            foreach ($playerStmt->fetchAll(PDO::FETCH_ASSOC) as $player)
-            {
-                $demoList[(int) $player['record_id']]['players'][$player['account_id']] = $player;
-            }
-
-            $playerId = $this->getFromRequest('find');
-            // TODO: refactor, we can fetch necessary data directly from DB, w/o filtering
-            if ($playerId)
-            {
-                $demoList = array_filter($demoList, function ($demo) use ($playerId)
-                {
-                    return in_array($playerId, array_keys($demo['players']));
-                });
+            foreach ($playerStmt->fetchAll(PDO::FETCH_ASSOC) as $player) {
+                $demoList[(int)$player['record_id']]['players'][$player['account_id']] = $player;
             }
         }
 
         return $this->template('demo/index', [
             'secondaryTitle' => 'Demo index',
             'demoList' => $demoList,
-            'playerId' => $playerId ?? null
+            'playerId' => $playerId,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'search' => $search
         ]);
     }
 

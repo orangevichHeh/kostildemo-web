@@ -34,7 +34,22 @@
         <div class="main-content">
             <section class="section">
                 <div class="container">
-                    <h1 class="title"><?= $secondaryTitle ?? $pageTitle ?></h1>
+                    <div class="columns">
+                        <div class="column">
+                            <h1 class="title"><?= $secondaryTitle ?? $pageTitle ?></h1>
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" id="searchInput" 
+                                           placeholder="Search by map name, player name, or Steam account ID...">
+                                    <span class="icon is-left">
+                                        <ion-icon name="search-outline"></ion-icon>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             <section class="section">
@@ -48,6 +63,7 @@
             <div class="content has-text-centered">
                 <p>
                     <strong>Demo System</strong> by <a href="https://github.com/Bubuni-Team" target="_blank" rel="noopener">Bubuni Team</a>. <br>
+                    <strong>Fork</strong> by <a href="https://github.com/OrangevichHeh" target="_blank" rel="noopener">OrangevichHeh</a>. <br>
                     Наполнено силой Bulma и PHP
                 </p>
             </div>
