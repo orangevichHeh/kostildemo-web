@@ -1,0 +1,82 @@
+:root[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #fafafa;
+    --text-primary: #363636;
+    --text-secondary: #4a4a4a;
+    --border-color: #dbdbdb;
+    --link-color: #485fc7;
+    --link-hover: #3850b7;
+}
+
+:root[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #242424;
+    --text-primary: #ffffff;
+    --text-secondary: #b5b5b5;
+    --border-color: #363636;
+    --link-color: #6d80d1;
+    --link-hover: #8596e3;
+}
+
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.hero, .footer {
+    background-color: var(--bg-secondary);
+}
+
+.title, .subtitle, .mapName {
+    color: var(--text-primary);
+}
+
+.input, .select select {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.notification {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--link-hover);
+}
+
+.pagination-link, .pagination-control {
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.pagination-link.is-current {
+    background-color: var(--link-color);
+    border-color: var(--link-color);
+} 
+
+::placeholder {
+    color: var(--text-secondary) !important;
+    font-weight: 300;
+}
+
+.select select {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.select:after {
+    border-color: var(--text-primary);
+}
+
+#dateSearch {
+    width: 100px;
+}

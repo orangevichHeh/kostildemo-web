@@ -18,12 +18,12 @@
                 <nav class="pagination is-centered" role="navigation" aria-label="pagination">
                     <?php if ($currentPage > 1): ?>
                         <a href="?page=<?= $currentPage - 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?>" 
-                           class="pagination-previous">Previous</a>
+                           class="pagination-control pagination-previous">Previous</a>
                     <?php endif; ?>
                     
                     <?php if ($currentPage < $totalPages): ?>
                         <a href="?page=<?= $currentPage + 1 ?><?= $search ? '&search=' . urlencode($search) : '' ?>" 
-                           class="pagination-next">Next</a>
+                           class="pagination-control pagination-next">Next</a>
                     <?php endif; ?>
 
                     <ul class="pagination-list">

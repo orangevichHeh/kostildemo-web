@@ -4,8 +4,9 @@ This repository is a fork of [Bubuni-Team/kostildemo](https://github.com/Bubuni-
 This fork adds pagination and search.
 
 ## Features
- - [x] Pagination
- - [x] Search
+ - [x] Pagination (10/25/50 records per page)
+ - [x] Search (Map name, player name, account id, date (day.month))
+ - [x] Light/Dark theme
  - [ ] Filter (?)
  - [ ] Sorting (?)
 
@@ -13,7 +14,7 @@ This fork adds pagination and search.
  - PHP 7.4 and larger.
  - PHP exts: JSON, PDO, PDO-MySQL.
  
-## Installation
+## Installation (not full)
 1. Install/check all dependencies on webserver.
 1. Download latest release and unzip the archive with the web part.
 1. Create a database in MySQL, load the `database.sql` dump into it.

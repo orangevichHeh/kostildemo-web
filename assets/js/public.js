@@ -93,5 +93,45 @@
                 }, 500);
             });
         }
+
+        // Theme handling
+        const initializeTheme = () => {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            
+            // Check for saved theme preference or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+            
+            function updateThemeIcon(theme) {
+                themeIcon.setAttribute('name', theme === 'light' ? 'moon-outline' : 'sunny-outline');
+            }
+        };
+
+        initializeTheme();
+
+        // Per page selector handling
+        const perPageSelect = document.getElementById('perPageSelect');
+        if (perPageSelect) {
+            const urlParams = new URLSearchParams(window.location.search);
+            perPageSelect.value = urlParams.get('per_page') || '10';
+
+            perPageSelect.addEventListener('change', function() {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('per_page', this.value);
+                currentUrl.searchParams.delete('page'); // Reset to page 1
+                window.location.href = currentUrl.toString();
+            });
+        }
     });
 })(window, document);

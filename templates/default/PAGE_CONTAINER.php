@@ -21,7 +21,7 @@
 
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
         <link rel="stylesheet" href="assets/css/main.css" />
-
+        <link rel="stylesheet" href="assets/css/theme.css" />
         <script src="assets/js/public.js"></script>
 
         <?php foreach ($headAdditionalCode ?? [] as $key => $str): ?>
@@ -39,13 +39,31 @@
                             <h1 class="title"><?= $secondaryTitle ?? $pageTitle ?></h1>
                         </div>
                         <div class="column">
-                            <div class="field">
-                                <div class="control has-icons-left">
+                            <div class="field has-addons">
+                                <div class="control has-icons-left is-expanded">
                                     <input class="input" type="text" id="searchInput" 
-                                           placeholder="Search by map name, player name, or Steam account ID...">
+                                           placeholder="Map name, player name, account ID, or date (DD.MM)...">
                                     <span class="icon is-left">
                                         <ion-icon name="search-outline"></ion-icon>
                                     </span>
+                                </div>
+                                <div class="control">
+                                    <div class="select">
+                                        <select id="perPageSelect">
+                                            <?php foreach ($allowedPerPage ?? [10, 25, 50] as $value): ?>
+                                                <option value="<?= $value ?>" <?= ($perPage ?? 10) == $value ? 'selected' : '' ?>>
+                                                    <?= $value ?> per page
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="control">
+                                    <button class="button" id="themeToggle">
+                                        <span class="icon">
+                                            <ion-icon name="moon-outline" id="themeIcon"></ion-icon>
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
                         </div>

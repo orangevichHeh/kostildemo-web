@@ -16,7 +16,8 @@ use PDO;
 
 class Demo extends AbstractController
 {
-    private const ITEMS_PER_PAGE = 10;
+    private const DEFAULT_ITEMS_PER_PAGE = 10;
+    private const ALLOWED_PER_PAGE = [10, 25, 50];
 
     public function actionIndex(): string
     {
@@ -24,6 +25,13 @@ class Demo extends AbstractController
         $page = max(1, (int)($this->getFromRequest('page') ?? 1));
         $search = $this->getFromRequest('search');
         $playerId = $this->getFromRequest('find');
+        $perPage = (int)($this->getFromRequest('per_page') ?? self::DEFAULT_ITEMS_PER_PAGE);
+        $dateSearch = $this->getFromRequest('date');
+
+        // Validate per_page parameter
+        if (!in_array($perPage, self::ALLOWED_PER_PAGE)) {
+            $perPage = self::DEFAULT_ITEMS_PER_PAGE;
+        }   
 
         // Build base query
         $baseQuery = "FROM `record` r 
@@ -32,12 +40,28 @@ class Demo extends AbstractController
         $whereConditions = [];
         $params = [];
 
-        // Add search condition
+        // Add search conditions
         if ($search) {
-            $whereConditions[] = "(r.map LIKE :search OR rp.username LIKE :search OR rp.account_id = :account_id)";
-            $params[':search'] = "%$search%";
-            // Try to convert search input to account_id if it's numeric
-            $params[':account_id'] = is_numeric($search) ? (int)$search : -1;
+            // Check if search is a date format (DD.MM)
+            if (preg_match('/^\d{1,2}\.\d{1,2}$/', $search)) {
+                list($day, $month) = explode('.', $search);
+                $whereConditions[] = "DATE_FORMAT(FROM_UNIXTIME(r.uploaded_at), '%d.%m') = :date";
+                $params[':date'] = sprintf('%02d.%02d', $day, $month);
+            } else {
+                // Regular search conditions
+                $whereConditions[] = "(r.map LIKE :search OR rp.username LIKE :search OR rp.account_id = :account_id)";
+                $params[':search'] = "%$search%";
+                $params[':account_id'] = is_numeric($search) ? (int)$search : -1;
+            }
+        }
+
+        // Add date search condition
+        if ($dateSearch) {
+            if (preg_match('/^\d{1,2}\.\d{1,2}$/', $dateSearch)) {
+                list($day, $month) = explode('.', $dateSearch);
+                $whereConditions[] = "DATE_FORMAT(FROM_UNIXTIME(r.uploaded_at), '%d.%m') = :date";
+                $params[':date'] = sprintf('%02d.%02d', $day, $month);
+            }
         }
 
         // Add player filter
@@ -58,15 +82,15 @@ class Demo extends AbstractController
 			$totalRecords = (int)$result['total'];
 		}
 
-        $totalPages = ceil($totalRecords / self::ITEMS_PER_PAGE);
+        $totalPages = ceil($totalRecords / $perPage);
 
         // Get paginated results
-        $offset = ($page - 1) * self::ITEMS_PER_PAGE;
+        $offset = ($page - 1) * $perPage;
         $query = "SELECT DISTINCT r.* " . $baseQuery . " " . $whereClause . " 
                  ORDER BY r.uploaded_at DESC LIMIT :limit OFFSET :offset";
         
         $stmt = $db->prepare($query);
-        $stmt->bindValue(':limit', self::ITEMS_PER_PAGE, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
@@ -99,7 +123,10 @@ class Demo extends AbstractController
             'playerId' => $playerId,
             'currentPage' => $page,
             'totalPages' => $totalPages,
-            'search' => $search
+            'search' => $search,
+            'perPage' => $perPage,
+            'dateSearch' => $dateSearch,
+            'allowedPerPage' => self::ALLOWED_PER_PAGE
         ]);
     }
 
