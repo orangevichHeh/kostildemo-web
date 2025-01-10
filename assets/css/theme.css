@@ -24,7 +24,7 @@ body {
     color: var(--text-primary);
 }
 
-.hero, .footer {
+html, .hero, .footer {
     background-color: var(--bg-secondary);
 }
 

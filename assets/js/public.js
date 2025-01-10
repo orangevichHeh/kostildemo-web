@@ -69,7 +69,8 @@
         if (searchInput) {
             // Set initial value from URL params
             const urlParams = new URLSearchParams(window.location.search);
-            searchInput.value = urlParams.get('search') || '';
+            const findParam = urlParams.get('find');
+            searchInput.value = urlParams.get('search') || findParam || '';
 
             let searchTimeout;
             searchInput.addEventListener('input', function() {
@@ -79,11 +80,17 @@
                     const currentUrl = new URL(window.location.href);
                     
                     if (searchValue) {
-                        // Remove any existing 'find' parameter if we're searching
-                        currentUrl.searchParams.delete('find');
-                        currentUrl.searchParams.set('search', searchValue);
+                        // Check if search value is a numeric player ID
+                        if (/^\d+$/.test(searchValue)) {
+                            currentUrl.searchParams.delete('search');
+                            currentUrl.searchParams.set('find', searchValue);
+                        } else {
+                            currentUrl.searchParams.delete('find');
+                            currentUrl.searchParams.set('search', searchValue);
+                        }
                     } else {
                         currentUrl.searchParams.delete('search');
+                        currentUrl.searchParams.delete('find');
                     }
                     
                     // Reset to page 1 when searching

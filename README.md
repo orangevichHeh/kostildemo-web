@@ -5,7 +5,7 @@ This fork adds pagination and search.
 
 ## Features
  - [x] Pagination (10/25/50 records per page)
- - [x] Search (Map name, player name, account id, date (day.month))
+ - [x] Search (Map name, player name, account id, date in format DD.MM)
  - [x] Light/Dark theme
  - [ ] Filter (?)
  - [ ] Sorting (?)

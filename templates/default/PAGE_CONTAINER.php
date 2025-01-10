@@ -42,7 +42,7 @@
                             <div class="field has-addons">
                                 <div class="control has-icons-left is-expanded">
                                     <input class="input" type="text" id="searchInput" 
-                                           placeholder="Map name, player name, account ID, or date (DD.MM)...">
+                                           placeholder="Map name, player name, account ID or date (DD.MM)...">
                                     <span class="icon is-left">
                                         <ion-icon name="search-outline"></ion-icon>
                                     </span>
